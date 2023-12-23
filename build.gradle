@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'io.qameta.allure' version '2.8.1'
+    id("com.ryandens.javaagent-application") version "0.4.2"
+}
+
+group 'com.browserstack'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+
+applicationDefaultJvmArgs = ["-javaagent:/Users/venkatesh/.gradle/caches/modules-2/files-2.1/com.browserstack/browserstack-java-sdk/1.12.5/df949005592cafaa4d20c66a15bd1064aa79f162/browserstack-java-sdk-1.12.5.jar"]
+
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.16.1'
+    implementation 'io.qameta.allure:allure-junit5:2.13.8'
+    implementation group: 'com.browserstack', name: 'browserstack-java-sdk', version: '1.12.5'
+    implementation 'com.browserstack:browserstack-local-java:1.0.6'
+    implementation 'com.opencsv:opencsv:5.3'
+    implementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.4.0'
+    javaagent("com.browserstack:browserstack-java-sdk:1.12.5")
+
+
+}
+
+def browserstackSDKArtifact = configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.find { it.name == 'browserstack-java-sdk' }
+
+test {
+    useJUnitPlatform()
+            {
+                jvmArgs "-javaagent:${browserstackSDKArtifact.file}"
+            }
+}
